@@ -1,5 +1,7 @@
 #include <stdio.h>
 #include <stdlib.h>
+#include "string.h"
+
 //ESTRUCTURAS
 typedef struct personaje
 {
@@ -18,19 +20,30 @@ typedef struct nodoLista
 typedef struct Especie
 {
     char nombreEspecie[20]; //vampiro, hombre lobo, hada, medium, cambia formas, humano
-    int rankPeligrosidad; //1 el más peligroso, 6 el menos peligroso
+    int rankPeligrosidad; //1 el mï¿½s peligroso, 6 el menos peligroso
     float promedioEdad; // 0
     nodoLista* personajes; //lista de personajes que pertencen a esta especie
 } Especie;
 
 typedef struct nodoArbol
 {
+
     Especie dato;
     struct nodoArbol* izq;
     struct nodoArbol* der;
 
 } nodoArbol;
 
+typedef struct
+{
+    char nombreEspecie[20]; //vampiro, hombre lobo, hada, medium, cambia formas, humano
+    int rankPeligrosidad;
+    char nombreYapellido [30];
+    int edad;
+    int dni;
+
+
+} registroArchivo;
 
 
 
@@ -47,6 +60,8 @@ nodoArbol* inicArbol();
 nodoArbol* pasarListaAArbol(Especie arreglo[], int validos);
 nodoArbol* crearNodoArbol(Especie dato);
 nodoArbol* insertar(nodoArbol* arbol, nodoArbol* nuevoNodo);
+void pasarArregloAArchivo(char archivo[], Especie arreglo[], int validos);
+
 int main()
 {
 
@@ -366,4 +381,31 @@ void inOrder(nodoArbol* arbol)
         inOrder(arbol->der);
     }
 }
+
+void pasarArregloAArchivo(char archivo[], Especie arreglo[], int validos)
+{
+    int i = 0;
+    registroArchivo datos;
+    FILE* archi = fopen(archivo, "a+b");
+    if(archi)
+    {
+        while (i<validos)
+        {
+            strcpy(datos.nombreEspecie,arreglo[i].personajes->dato.nombreYapellido);
+            datos.rankPeligrosidad = arreglo[i].rankPeligrosidad;
+            while(arreglo[i].personajes!=NULL)
+            {
+                datos.dni = arreglo[i].personajes->dato.dni;
+                datos.edad = arreglo[i].personajes->dato.edad;
+                strcpy(datos.nombreYapellido,arreglo[i].personajes->dato.nombreYapellido);
+
+                fwrite(&datos, sizeof(registroArchivo),1,archi);
+
+                arreglo[i].personajes=arreglo[i].personajes->siguiente;
+            }
+            i++;
+        }
+    }
+}
+
 
